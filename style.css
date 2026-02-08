@@ -392,20 +392,24 @@ body {
 }
 
 /* Custom Scrollbar - Cookie Theme */
-.table-container::-webkit-scrollbar {
+.table-container::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar {
     width: 8px;
 }
 
-.table-container::-webkit-scrollbar-track {
+.table-container::-webkit-scrollbar-track,
+.modal-body::-webkit-scrollbar-track {
     background: var(--bg-secondary);
 }
 
-.table-container::-webkit-scrollbar-thumb {
+.table-container::-webkit-scrollbar-thumb,
+.modal-body::-webkit-scrollbar-thumb {
     background: var(--primary);
     border-radius: 4px;
 }
 
-.table-container::-webkit-scrollbar-thumb:hover {
+.table-container::-webkit-scrollbar-thumb:hover,
+.modal-body::-webkit-scrollbar-thumb:hover {
     background: var(--primary-hover);
 }
 
@@ -475,7 +479,7 @@ body {
 }
 
 .col-actions {
-    width: 70px;
+    width: 80px;
     text-align: center;
 }
 
@@ -798,6 +802,7 @@ input[type="checkbox"] {
         opacity: 0;
         transform: translateX(-50%) translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateX(-50%) translateY(0);
