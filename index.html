@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <title>Cookie Manager - Extensión de Navegador</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient-start: #3E2723;
+            --bg-gradient-mid: #5D4037;
+            --bg-gradient-end: #795548;
+            --text-primary: #FFF8E7;
+            --text-secondary: #E8D4B8;
+            --accent: #D4A574;
+            --accent-dark: #C4956A;
+            --card-bg: rgba(255, 248, 231, 0.08);
+            --card-border: rgba(212, 165, 116, 0.2);
+        }
+
+        .dark-mode {
+            --bg-gradient-start: #1A0F0A;
+            --bg-gradient-mid: #2D1B12;
+            --bg-gradient-end: #3E2723;
+            --text-primary: #D4A574;
+            --text-secondary: #C4956A;
+            --accent: #FFF8E7;
+            --accent-dark: #E8D4B8;
+            --card-bg: rgba(212, 165, 116, 0.05);
+            --card-border: rgba(212, 165, 116, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            transition: all 0.4s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Theme Toggle for Landing Page */
+        .page-theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-theme-toggle:hover {
+            background: rgba(212, 165, 116, 0.2);
+        }
+
+        .page-theme-toggle span {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .toggle-icon {
+            width: 24px;
+            height: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-icon.sun {
+            fill: #F59E0B;
+        }
+
+        .toggle-icon.moon {
+            fill: var(--accent);
+            display: none;
+        }
+
+        .dark-mode .toggle-icon.sun {
+            display: none;
+        }
+
+        .dark-mode .toggle-icon.moon {
+            display: block;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-top: 40px;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #D4A574 0%, #C4956A 100%);
+            border-radius: 50%;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 40px rgba(62, 39, 35, 0.4);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 50%);
+        }
+
+        .logo svg {
+            width: 100px;
+            height: 100px;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* New Feature Badge */
+        .new-feature {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            color: #3E2723;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 32px;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(62, 39, 35, 0.4);
+            border-color: rgba(212, 165, 116, 0.4);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #D4A574 0%, #C4956A 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(62, 39, 35, 0.3);
+        }
+
+        .feature-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: #3E2723;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Preview Section */
+        .preview-section {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .preview-section h2 {
+            font-size: 32px;
+            margin-bottom: 32px;
+            color: var(--text-primary);
+        }
+
+        .preview-container {
+            display: inline-block;
+            background: #5D4037;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 25px 50px rgba(62, 39, 35, 0.6);
+            border: 2px solid #D4A574;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .preview-container {
+            background: #1A0F0A;
+            border-color: #C4956A;
+        }
+
+        .preview-container iframe {
+            border: none;
+            border-radius: 8px;
+            width: 650px;
+            height: 500px;
+        }
+
+        /* Installation Section */
+        .installation {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .installation h2 {
+            font-size: 28px;
+            margin-bottom: 24px;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .step {
+            display: flex;
+            gap: 16px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #D4A574 0%, #C4956A 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+            color: #3E2723;
+            box-shadow: 0 4px 12px rgba(62, 39, 35, 0.3);
+        }
+
+        .step-content h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .step-content code {
+            background: rgba(212, 165, 116, 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--accent-dark);
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .preview-container iframe {
+                width: 100%;
+                max-width: 350px;
+                height: 400px;
+            }
+
+            .page-theme-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 6px 12px;
+            }
+
+            .page-theme-toggle span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <button class="page-theme-toggle" id="pageThemeToggle" title="Cambiar tema">
+        <svg class="toggle-icon sun" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+            <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2"/>
+            <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2"/>
+            <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <svg class="toggle-icon moon" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <span id="themeText">Modo Oscuro</span>
+    </button>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg viewBox="0 0 100 100">
+                    <!-- Cookie base -->
+                    <circle cx="50" cy="50" r="45" fill="#D4A574"/>
+                    <!-- Cookie texture/shadow -->
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#C4956A" stroke-width="3"/>
+                    <!-- Chocolate chips -->
+                    <circle cx="30" cy="30" r="7" fill="#5D4037"/>
+                    <circle cx="55" cy="25" r="6" fill="#3E2723"/>
+                    <circle cx="75" cy="40" r="7" fill="#5D4037"/>
+                    <circle cx="35" cy="55" r="6" fill="#3E2723"/>
+                    <circle cx="60" cy="55" r="7" fill="#5D4037"/>
+                    <circle cx="45" cy="75" r="6" fill="#3E2723"/>
+                    <circle cx="70" cy="70" r="5" fill="#5D4037"/>
+                    <circle cx="25" cy="70" r="5" fill="#3E2723"/>
+                </svg>
+            </div>
+            <h1>Cookie Manager</h1>
+            <p class="subtitle">
+                Una extensión de navegador potente y fácil de usar para visualizar, editar, eliminar y exportar cookies de cualquier sitio web.
+            </p>
+            <div class="new-feature">
+                ✨ ¡Nuevo! Modo Oscuro con tema de Chocolate
+            </div>
+        </header>
+
+        <!-- Features -->
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </div>
+                <h3>Visualizar Cookies</h3>
+                <p>Ve todas las cookies del sitio actual con su nombre, valor, dominio, fecha de expiración y más atributos en una tabla organizada.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </div>
+                <h3>Editar Cookies</h3>
+                <p>Modifica el valor, dominio, fecha de expiración, flags de seguridad y otros atributos de cualquier cookie con un formulario intuitivo.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                        <line x1="10" y1="11" x2="10" y2="17"/>
+                        <line x1="14" y1="11" x2="14" y2="17"/>
+                    </svg>
+                </div>
+                <h3>Eliminar Cookies</h3>
+                <p>Elimina cookies individuales o múltiples cookies seleccionadas con un solo clic. Selección masiva con checkboxes.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                </div>
+                <h3>Exportar Cookies</h3>
+                <p>Exporta todas las cookies o solo las seleccionadas en formato JSON. Perfecto para backup, debugging o migración.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                </div>
+                <h3>Búsqueda y Filtrado</h3>
+                <p>Encuentra rápidamente cualquier cookie con la barra de búsqueda. Filtra por nombre, dominio o valor.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                </div>
+                <h3>Tema Claro/Oscuro</h3>
+                <p>Alterna entre el tema claro (galleta) y oscuro (chocolate) según tu preferencia. Tu elección se guarda automáticamente.</p>
+            </div>
+        </section>
+
+        <!-- Preview -->
+        <section class="preview-section">
+            <h2>Vista Previa de la Extensión</h2>
+            <div class="preview-container">
+                <iframe src="popup.html"></iframe>
+            </div>
+        </section>
+
+        <!-- Installation -->
+        <section class="installation">
+            <h2>Cómo Instalar</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Descargar los archivos</h4>
+                        <p>Descarga todos los archivos de la extensión (manifest.json, popup.html, popup.js, style.css) en una carpeta.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Abrir Chrome Extensions</h4>
+                        <p>Navega a <code>chrome://extensions</code> en tu navegador Chrome, Edge o Brave.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Activar Modo Desarrollador</h4>
+                        <p>Activa el interruptor "Modo de desarrollador" en la esquina superior derecha.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Cargar la extensión</h4>
+                        <p>Haz clic en "Cargar descomprimida" y selecciona la carpeta con los archivos de la extensión.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Cookie Manager v1.0 - Desarrollado para navegadores basados en Chromium</p>
+        </footer>
+    </div>
+
+    <script>
+        // Theme toggle for landing page
+        const pageThemeToggle = document.getElementById('pageThemeToggle');
+        const themeText = document.getElementById('themeText');
+        
+        // Load saved preference
+        const savedTheme = localStorage.getItem('cookieManagerLandingTheme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeText.textContent = 'Modo Claro';
+        }
+
+        pageThemeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('cookieManagerLandingTheme', isDark ? 'dark' : 'light');
+            themeText.textContent = isDark ? 'Modo Claro' : 'Modo Oscuro';
+        });
+    </script>
+</body>
+</html>

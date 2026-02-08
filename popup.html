@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-top">
+                <div class="header-title">
+                    <svg class="cookie-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="12" cy="12" r="10" fill="#D4A574" />
+                        <circle cx="7" cy="8" r="1.8" fill="#5D4037" />
+                        <circle cx="12" cy="6" r="1.5" fill="#3E2723" />
+                        <circle cx="16" cy="9" r="1.6" fill="#5D4037" />
+                        <circle cx="9" cy="13" r="1.7" fill="#3E2723" />
+                        <circle cx="14" cy="14" r="1.5" fill="#5D4037" />
+                        <circle cx="17" cy="15" r="1.3" fill="#3E2723" />
+                        <circle cx="6" cy="15" r="1.4" fill="#5D4037" />
+                        <circle cx="11" cy="18" r="1.2" fill="#3E2723" />
+                    </svg>
+                    <h1>Cookie Manager</h1>
+                </div>
+                <div class="theme-toggle">
+                    <span class="theme-label" id="themeLabel">Claro</span>
+                    <button class="theme-toggle-btn" id="themeToggle" title="Cambiar tema">
+                        <div class="toggle-track">
+                            <div class="toggle-thumb">
+                                <!-- Sun icon (light mode) -->
+                                <svg class="icon-light" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="5" />
+                                    <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" />
+                                    <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" />
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor"
+                                        stroke-width="2" />
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor"
+                                        stroke-width="2" />
+                                    <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" />
+                                    <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" />
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor"
+                                        stroke-width="2" />
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor"
+                                        stroke-width="2" />
+                                </svg>
+                                <!-- Moon icon (dark mode) -->
+                                <svg class="icon-dark" viewBox="0 0 24 24">
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            <div class="current-site" id="currentSite">Cargando...</div>
+        </header>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input type="text" id="searchInput" placeholder="Buscar por nombre o dominio..." class="search-input">
+            </div>
+            <div class="toolbar-actions">
+                <button id="refreshBtn" class="btn btn-secondary" title="Actualizar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 4v6h-6M1 20v-6h6" />
+                        <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
+                    </svg>
+                </button>
+                <button id="selectAllBtn" class="btn btn-secondary" title="Seleccionar todo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <path d="m9 12 2 2 4-4" />
+                    </svg>
+                </button>
+                <button id="deleteSelectedBtn" class="btn btn-danger" title="Eliminar seleccionadas" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                    </svg>
+                </button>
+                <button id="copySelectedBtn" class="btn btn-primary" title="Copiar seleccionadas">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+                <button id="exportSelectedBtn" class="btn btn-primary" title="Exportar seleccionadas">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                        <polyline points="7,10 12,15 17,10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <span id="cookieCount">0 cookies</span>
+            <span id="selectedCount">0 seleccionadas</span>
+        </div>
+
+        <!-- Cookie Table -->
+        <div class="table-container">
+            <table class="cookie-table">
+                <thead>
+                    <tr>
+                        <th class="col-checkbox">
+                            <input type="checkbox" id="selectAllCheckbox" title="Seleccionar todas">
+                        </th>
+                        <th class="col-name">Nombre</th>
+                        <th class="col-value">Valor</th>
+                        <th class="col-domain">Dominio</th>
+                        <th class="col-expires">Expira</th>
+                        <th class="col-actions">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cookieTableBody">
+                    <!-- Cookies will be inserted here -->
+                </tbody>
+            </table>
+            <div id="emptyState" class="empty-state hidden">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M8 12h8M12 8v8" />
+                </svg>
+                <p>No se encontraron cookies</p>
+            </div>
+            <div id="loadingState" class="loading-state">
+                <div class="spinner"></div>
+                <p>Cargando cookies...</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <span>Cookie Manager v1.0</span>
+        </footer>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Cookie</h2>
+                <button id="closeModalBtn" class="btn-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+            <form id="editForm" class="modal-body">
+                <div class="form-group">
+                    <label for="editName">Nombre</label>
+                    <input type="text" id="editName" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="editValue">Valor</label>
+                    <textarea id="editValue" class="form-input form-textarea" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editDomain">Dominio</label>
+                        <input type="text" id="editDomain" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="editPath">Path</label>
+                        <input type="text" id="editPath" class="form-input">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editExpires">Fecha de Expiración</label>
+                        <input type="datetime-local" id="editExpires" class="form-input">
+                    </div>
+                </div>
+                <div class="form-row checkboxes">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editSecure">
+                        <span>Secure</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editHttpOnly">
+                        <span>HttpOnly</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="editSameSite">SameSite</label>
+                    <select id="editSameSite" class="form-input">
+                        <option value="no_restriction">None</option>
+                        <option value="lax">Lax</option>
+                        <option value="strict">Strict</option>
+                    </select>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button id="cancelEditBtn" class="btn btn-secondary">Cancelar</button>
+                <button id="saveEditBtn" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>
